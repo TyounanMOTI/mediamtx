@@ -46,7 +46,7 @@ type PathConf struct {
 	SourceOnDemand             bool           `json:"sourceOnDemand"`
 	SourceOnDemandStartTimeout StringDuration `json:"sourceOnDemandStartTimeout"`
 	SourceOnDemandCloseAfter   StringDuration `json:"sourceOnDemandCloseAfter"`
-	SourceRedirect             string         `json:"sourceRedirect"`
+	SourceRedirect             []string       `json:"sourceRedirect"`
 	DisablePublisherOverride   bool           `json:"disablePublisherOverride"`
 	Fallback                   string         `json:"fallback"`
 	RPICameraCamID             int            `json:"rpiCameraCamID"`
@@ -162,13 +162,15 @@ func (pconf *PathConf) checkAndFillMissing(conf *Conf, name string) error {
 		}
 
 	case pconf.Source == "redirect":
-		if pconf.SourceRedirect == "" {
+		if len(pconf.SourceRedirect) == 0 {
 			return fmt.Errorf("source redirect must be filled")
 		}
 
-		_, err := url.Parse(pconf.SourceRedirect)
-		if err != nil {
-			return fmt.Errorf("'%s' is not a valid RTSP URL", pconf.SourceRedirect)
+		for _, v := range pconf.SourceRedirect {
+			_, err := url.Parse(v)
+			if err != nil {
+				return fmt.Errorf("'%s' is not a valid RTSP URL", v)
+			}
 		}
 
 	case pconf.Source == "rpiCamera":

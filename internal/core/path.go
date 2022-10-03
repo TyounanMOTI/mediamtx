@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"net"
 	"strconv"
 	"strings"
@@ -350,6 +351,8 @@ func (pa *path) hasOnDemandPublisher() bool {
 
 func (pa *path) run() {
 	defer pa.wg.Done()
+
+	rand.Seed(time.Now().UnixNano())
 
 	if pa.conf.Source == "redirect" {
 		pa.source = &sourceRedirect{}
@@ -732,8 +735,9 @@ func (pa *path) doPublisherRemove() {
 
 func (pa *path) handleDescribe(req pathDescribeReq) {
 	if _, ok := pa.source.(*sourceRedirect); ok {
+		i := rand.Intn(len(pa.conf.SourceRedirect))
 		req.res <- pathDescribeRes{
-			redirect: pa.conf.SourceRedirect,
+			redirect: pa.conf.SourceRedirect[i],
 		}
 		return
 	}

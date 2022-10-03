@@ -138,7 +138,9 @@ components:
         sourceOnDemandCloseAfter:
           type: string
         sourceRedirect:
-          type: string
+          type: array
+          items:
+            type: string
         disablePublisherOverride:
           type: boolean
         fallback:
